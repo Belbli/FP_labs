@@ -2,6 +2,10 @@ makePositive :: [Integer] -> [Integer]
 makePositive [] = []
 makePositive (x:xs) = abs(x) : makePositive xs
 
+getN :: Int -> [Integer] -> Maybe Integer
+getN _ [] = Nothing
+getN n list = Just(list!!n)
+
 countTrue :: [Bool] -> Integer
 countTrue [] = 0
 countTrue (x:xs) = if(x) then 1 + countTrue xs else countTrue xs

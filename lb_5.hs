@@ -46,6 +46,7 @@ type Deck = [Card]
     let c1 = (Two, Club)
     let c2 = (Ace, Club)
     let c3 = (Two, Spade)
+    let c4 = (Ace, Spade)
     let list = c1 : c2 : c3 : []
 -}
 
@@ -81,6 +82,62 @@ cardValue (v, _) = case v of
     King -> 10
     Ace -> 11
 
-ochko :: [Card] -> [Integer]
-ochko [] = []
-ochko (x:xs) = cardValue x : ochko xs
+getValue :: Card -> Value
+getValue (v, _) = v
+
+valueWithoutAce :: [Card] -> Integer
+valueWithoutAce [] = 0
+valueWithoutAce (x:xs) = if(getValue x /= Ace) then cardValue x + valueWithoutAce xs else valueWithoutAce xs
+
+countAces :: [Card] -> Integer
+countAces [] = 0
+countAces (x:xs) = if(getValue x == Ace) then 1 + countAces xs else countAces xs
+
+addT :: Integer -> [Integer] -> [Integer]
+addT 0 x = x
+addT n x = addT (n-1) $ (map (+1) x) ++ (map (+11) x)
+-- 5 15 -> 6 16 16 26
+getUniq :: [Integer] -> [Integer] -> [Integer]
+getUniq [] r = r
+getUniq (x:xs) r | (x `elem` r) = getUniq xs r
+                 | otherwise = getUniq xs (x:r) 
+
+task :: [Card] -> [Integer]
+task c = getUniq (addT nt [swt]) []
+         where nt  = countAces c
+               swt = valueWithoutAce c
+
+{- data Cards = One | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | V | D | K | T deriving (Eq,Show)
+ 
+getNumT :: [Cards] -> Int
+getNumT []     = 0
+getNumT (c:cs) = if (c == T) then 1 + (getNumT cs) else getNumT cs
+
+getSumWT :: [Cards] -> Int
+getSumWT [] = 0
+getSumWT (c:cs) | (c==One) = 1 + (getSumWT cs) 
+                | (c==Two) = 2 + (getSumWT cs)
+                | (c==Three) = 3 + (getSumWT cs)
+                | (c==Four) = 4 + (getSumWT cs)
+                | (c==Five) = 5 + (getSumWT cs)
+                | (c==Six) = 6 + (getSumWT cs)
+                | (c==Seven) = 7 + (getSumWT cs)
+                | (c==Eight) = 8 + (getSumWT cs)
+                | (c==Nine) = 9 + (getSumWT cs)
+                | (c==Ten) = 10 + (getSumWT cs)
+                | (c==V) || (c==D) || (c==K) = 10 + (getSumWT cs)
+                | (c==T) = (getSumWT cs)
+ 
+addT :: Int -> [Int] -> [Int]
+addT 0 x = x
+addT n x = addT (n-1) $ (map (+1) x) ++ (map (+11) x)
+ 
+getUniq :: [Int] -> [Int] -> [Int]
+getUniq [] r = r
+getUniq (x:xs) r | (x `elem` r) = getUniq xs r
+                 | otherwise = getUniq xs (x:r) 
+                 
+task :: [Cards] -> [Int]
+task c = getUniq (addT nt [swt]) []
+         where nt  = getNumT c
+               swt = getSumWT c  -}  
