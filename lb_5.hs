@@ -1,4 +1,3 @@
-import Data.List
 data Product = Book String String | VideoCassete String | CD String String Integer deriving (Show, Eq)
 {-
     let c = Book "qwe" "asd"
@@ -106,38 +105,3 @@ task :: [Card] -> [Integer]
 task c = getUniq (addT nt [swt]) []
          where nt  = countAces c
                swt = valueWithoutAce c
-
-{- data Cards = One | Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | V | D | K | T deriving (Eq,Show)
- 
-getNumT :: [Cards] -> Int
-getNumT []     = 0
-getNumT (c:cs) = if (c == T) then 1 + (getNumT cs) else getNumT cs
-
-getSumWT :: [Cards] -> Int
-getSumWT [] = 0
-getSumWT (c:cs) | (c==One) = 1 + (getSumWT cs) 
-                | (c==Two) = 2 + (getSumWT cs)
-                | (c==Three) = 3 + (getSumWT cs)
-                | (c==Four) = 4 + (getSumWT cs)
-                | (c==Five) = 5 + (getSumWT cs)
-                | (c==Six) = 6 + (getSumWT cs)
-                | (c==Seven) = 7 + (getSumWT cs)
-                | (c==Eight) = 8 + (getSumWT cs)
-                | (c==Nine) = 9 + (getSumWT cs)
-                | (c==Ten) = 10 + (getSumWT cs)
-                | (c==V) || (c==D) || (c==K) = 10 + (getSumWT cs)
-                | (c==T) = (getSumWT cs)
- 
-addT :: Int -> [Int] -> [Int]
-addT 0 x = x
-addT n x = addT (n-1) $ (map (+1) x) ++ (map (+11) x)
- 
-getUniq :: [Int] -> [Int] -> [Int]
-getUniq [] r = r
-getUniq (x:xs) r | (x `elem` r) = getUniq xs r
-                 | otherwise = getUniq xs (x:r) 
-                 
-task :: [Cards] -> [Int]
-task c = getUniq (addT nt [swt]) []
-         where nt  = getNumT c
-               swt = getSumWT c  -}  
