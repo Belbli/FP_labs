@@ -14,7 +14,7 @@ area :: Figure -> Double
 area (Circle _ _ r) = 2*3.14*r
 area (Rectangle x1 y1 x2 y2) = abs(x1-x2)*abs(y1-y2)
 area (Tryangle x1 y1 x2 y2 x3 y3) = 1/2 * abs((x1-x3) * (y2-y3) - (x2-x3) * (y1-y3))
---area (TextBox _ _ f s) = (fromIntegral (length s)) * (getLetterSize f)
+area (TextBox _ _ f s) = (fromIntegral (length s)) * (getLetterSize f)
 
 
 isRect :: Figure -> Bool
@@ -62,6 +62,8 @@ data Object = Object {objType :: Estate, price :: Double} deriving(Show, Eq)
 
 data Query = Query {minSquare :: Double, maxPrice :: Double, minFloor :: Integer, maxFloor :: Integer} deriving(Show, Eq)
 
+--type Apartment = {floor :: Integer, square :: Double, flours :: Integer}
+
 {-
     let ap = [Apartment]
     let a1 = Apartment 10 56.6 20
@@ -105,7 +107,8 @@ getByLvl (x:xs) floor = if(getFloor x /= Nothing && fromJust(getFloor x) == floo
 
 getExceptBounds :: [Object] -> [Object]
 getExceptBounds [] = []
-getExceptBounds (x:xs) = if(getFloor x /= Nothing && fromJust(getFloor x) > 1 && getFloor x < getFloorBound x) then x : getExceptBounds xs else getExceptBounds xs
+getExceptBounds (x:xs) = if(getFloor x /= Nothing && fromJust(getFloor x) > 1
+    && getFloor x < getFloorBound x) then x : getExceptBounds xs else getExceptBounds xs
 
 getSq :: Object -> Double
 getSq (Object (Apartment _ s _) _) = s
