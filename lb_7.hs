@@ -1,4 +1,5 @@
 import Data.Maybe
+import Data.Char
 data Date = DM {day :: Integer, month :: Integer} | DMY {day :: Integer, month :: Integer, year :: Integer} deriving(Show, Eq)
 {- data Birthday = Birthday {name :: String, date :: Date}
 data Phone = Phone {contactName :: String, phone :: Integer}
@@ -18,7 +19,7 @@ type Elbook = [Note]
     let b5 = Meeting (DMY 10 11 2020) "Important deal"
     let b6 = Meeting (DMY 7 5 2020) "Smth important"
     let elBook = b : b1 : b2 : b3 : b4 : b5 : b6 : []
-    getBirthdaysAndPhones elBook (DMY 7 5 2020)
+    getByAssigment elBook (DMY 7 5 2020)
 -}
 
 getName :: Note -> Maybe String
@@ -70,7 +71,80 @@ getByAssigment :: Elbook -> Date -> Elbook
 getByAssigment [] _ = []
 getByAssigment elb date = getDealsByDate elb date ++ getBirthdaysAndPhones elb date
 
-{- g :: Elbook -> Date -> Elbook
-g [] _ = []
-fromJust(getPhone (x:xs) (fromJust(getName x)))
-g elb date = getDealsByDate elb date ++ getDealsByDate elb date -}
+data KeyCode = Sym Char | CapsLock | Shift Char deriving (Eq,Show)
+ 
+getSym :: KeyCode -> Bool -> Char
+getSym (Sym a) False = a
+getSym (Sym a) True = toUpper a
+getSym (Shift '1') _ = '!'
+getSym (Shift '2') _ = '@'
+getSym (Shift '3') _ = '#'
+getSym (Shift '4') _ = '$'
+getSym (Shift '5') _ = '%'
+getSym (Shift '6') _ = '^'
+getSym (Shift '7') _ = '&'
+getSym (Shift '8') _ = '*'
+getSym (Shift '9') _ = '('
+getSym (Shift '0') _ = ')'
+getSym (Shift '-') _ = '_'
+getSym (Shift '=') _ = '+'
+getSym (Shift a) cl | cl == False = if (toUpper a == a) then toLower a else toUpper a
+                    | cl == True = if (toUpper a == a) then toUpper a else toLower a
+ 
+getString :: [KeyCode] -> Bool -> String
+getString [] _ = ""
+getString (CapsLock:ks) cl = getString ks (not cl)
+getString (k:ks) cl = (getSym k cl) : getString ks cl
+                        
+getAlNum :: [KeyCode] -> [KeyCode]
+getAlNum [] = []    
+getAlNum (CapsLock:ks) = getAlNum ks
+getAlNum (k:ks)            = k : getAlNum ks
+ 
+getRaw :: [KeyCode] -> String
+getRaw [] = ""
+getRaw (CapsLock:ks) = getRaw ks
+getRaw (Sym k:ks) = k : getRaw ks
+getRaw (Shift k:ks)  = k : getRaw ks
+ 
+isCapsLocked  :: [KeyCode] -> Bool -> Bool
+isCapsLocked [] cl  = cl
+isCapsLocked (CapsLock:ks) cl = isCapsLocked ks (not cl)
+isCapsLocked (k:ks) cl = isCapsLocked ks cl
+
+
+
+data Task = Laba {subject :: String, labaNum :: Integer}
+            |Rgz {rgzSubject :: String}
+            |Referat {refSubject :: String, theme :: String} deriving(Show, Eq)
+
+data Lesson = Lesson {task :: Task, completionWeek :: Maybe Integer} deriving(Show, Eq)
+type Plan = [Lesson]
+
+{-
+    let t = [Laba "FP" 7, Rgz "KSIS", Referat "FP" "User types in Haskell", Laba "FP" 6, Rgz "Math", Rgz "Art"]
+    let c = [Lesson (Laba "FP" 7) (Just 4), Lesson (Rgz "KSIS") (Just 5), Lesson (Referat "FP" "User types in Haskell") Nothing, Lesson (Laba "FP" 6) Nothing]
+-}
+
+getTitle :: Lesson -> String
+getTitle (Lesson (Laba s _) _) = s
+getTitle (Lesson(Rgz s) _) = s
+getTitle (Lesson(Referat s _) _) = s
+
+getByTitle :: Plan -> String -> Plan
+getByTitle [] _ = []
+getByTitle (x:xs) title = if(getTitle x == title) then x : getByTitle xs title else getByTitle xs title
+
+getReferates :: Plan -> [Task]
+getReferates [] = []
+getReferates ((Lesson(Referat s t)n):xs) = (Referat s t) : getReferates xs
+getReferates (x:xs) = getReferates xs
+
+isDone :: Lesson -> Maybe Integer
+isDone (Lesson(Laba _ _)n) = n
+isDone (Lesson(Rgz _)n) = n
+isDone (Lesson(Referat _ _)n) = n
+
+getRest :: Plan -> Plan
+getRest [] = []
+getRest (x:xs) = if(isDone x == Nothing) then x : getRest xs else getRest xs
