@@ -11,7 +11,7 @@ data Figure = Circle {cx :: Double, cy :: Double, r :: Double}
              | TextBox {bx :: Double, by :: Double, fontFamily :: Font, text :: String} deriving (Show, Eq)
 
 area :: Figure -> Double
-area (Circle _ _ r) = 2*3.14*r
+area (Circle _ _ r) = 3.14*r*r
 area (Rectangle x1 y1 x2 y2) = abs(x1-x2)*abs(y1-y2)
 area (Tryangle x1 y1 x2 y2 x3 y3) = 1/2 * abs((x1-x3) * (y2-y3) - (x2-x3) * (y1-y3))
 area (TextBox _ _ f s) = (fromIntegral (length s)) * (getLetterSize f)

@@ -27,13 +27,13 @@ substitute ch1 ch2 (x:xs) = if(x /= ch1) then x : substitute ch1 ch2 xs else ch2
 doubleAvg :: [Double] -> Double
 doubleAvg list = foldr (+) 0 list / foldr (\x y -> 1+y) 0 list
 
-list2 :: Integer -> [Integer]
-list2 0 = []
-list2 x = list2 (x-1)++(x:[])
-
 list1 :: Integer -> [Integer]
 list1 0 = []
-list1 x = list1 (x-1)++(2*x-1:[])
+list1 x = list1 (x-1)++(x:[])
+
+list2 :: Integer -> [Integer]
+list2 0 = []
+list2 x = list2 (x-1)++(2*x-1:[])
 
 list3 :: Integer -> [Integer]
 list3 0 = []

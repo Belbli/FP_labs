@@ -1,6 +1,7 @@
 import Data.Maybe
 import Data.Char
 data Date = DM {day :: Integer, month :: Integer} | DMY {day :: Integer, month :: Integer, year :: Integer} deriving(Show, Eq)
+
 {- data Birthday = Birthday {name :: String, date :: Date}
 data Phone = Phone {contactName :: String, phone :: Integer}
 data Meeting = Meeting {dateOfMeeting :: Date, about :: String} -}
@@ -71,49 +72,115 @@ getByAssigment :: Elbook -> Date -> Elbook
 getByAssigment [] _ = []
 getByAssigment elb date = getDealsByDate elb date ++ getBirthdaysAndPhones elb date
 
-data KeyCode = Sym Char | CapsLock | Shift Char deriving (Eq,Show)
- 
-getSym :: KeyCode -> Bool -> Char
-getSym (Sym a) False = a
-getSym (Sym a) True = toUpper a
-getSym (Shift '1') _ = '!'
-getSym (Shift '2') _ = '@'
-getSym (Shift '3') _ = '#'
-getSym (Shift '4') _ = '$'
-getSym (Shift '5') _ = '%'
-getSym (Shift '6') _ = '^'
-getSym (Shift '7') _ = '&'
-getSym (Shift '8') _ = '*'
-getSym (Shift '9') _ = '('
-getSym (Shift '0') _ = ')'
-getSym (Shift '-') _ = '_'
-getSym (Shift '=') _ = '+'
-getSym (Shift a) cl | cl == False = if (toUpper a == a) then toLower a else toUpper a
-                    | cl == True = if (toUpper a == a) then toUpper a else toLower a
- 
-getString :: [KeyCode] -> Bool -> String
-getString [] _ = ""
-getString (CapsLock:ks) cl = getString ks (not cl)
-getString (k:ks) cl = (getSym k cl) : getString ks cl
-                        
-getAlNum :: [KeyCode] -> [KeyCode]
-getAlNum [] = []    
-getAlNum (CapsLock:ks) = getAlNum ks
-getAlNum (k:ks)            = k : getAlNum ks
- 
-getRaw :: [KeyCode] -> String
+{-      22222222222222222222
+        22222222222222222222
+        2222            2222
+        2222            2222
+        2222            2222
+                        2222
+                        2222
+                        2222
+        22222222222222222222
+        22222222222222222222
+        2222    
+        2222
+        2222
+        2222
+        2222
+        22222222222222222222
+        22222222222222222222
+ -}     
+
+data Keys = Shift Char | CapsLock | Symb Char deriving (Show,Eq)
+
+getAlNum :: [Keys] -> [Keys]
+getAlNum [] = []
+getAlNum (n@(Symb s) :t) = n : getAlNum t
+getAlNum (_ :t) = getAlNum t
+
+getRaw :: [Keys] -> String
 getRaw [] = ""
-getRaw (CapsLock:ks) = getRaw ks
-getRaw (Sym k:ks) = k : getRaw ks
-getRaw (Shift k:ks)  = k : getRaw ks
- 
-isCapsLocked  :: [KeyCode] -> Bool -> Bool
-isCapsLocked [] cl  = cl
-isCapsLocked (CapsLock:ks) cl = isCapsLocked ks (not cl)
-isCapsLocked (k:ks) cl = isCapsLocked ks cl
+getRaw (Symb s :t) = s : getRaw t
+getRaw (_ :t) = getRaw t
+
+isCapsLocked :: [Keys] -> Bool -> Bool
+isCapsLocked [] b = b
+isCapsLocked (h:t) b = if (h == CapsLock) then isCapsLocked t (not b) else isCapsLocked t b
+
+getString :: [Keys] -> Bool -> String
+getString [] b = []
+getString (CapsLock :t) b = getString t (not b)
+getString (Symb c :t) b = if b then (toUpper c) : (getString t b) else c : (getString t b)
+getString (Shift c :t) b = if b then (toLower c) : (getString t b) else (toUpper c) : (getString t b)
+
+test = [Symb 'a',CapsLock,Symb 's',Shift 'u',Symb 'e',CapsLock,Symb 'z']
+
+main2 = do
+    print $ getAlNum test
+    print $ getRaw test
+    print $ isCapsLocked test False
+    print $ getString test False
 
 
 
+data Task = Lab String Integer     --Название предмета, номер лабораторной работы
+            | RGZ String           --Название предмета
+            | Report String String --Название предмета, тема реферата
+            deriving (Show, Eq)
+
+getSubj :: Task -> String
+getSubj (Lab s n) = s
+getSubj (RGZ s) = s
+getSubj (Report s n) = s
+getByTitle :: [(Task, Maybe Integer)] -> String ->  [Task]
+getByTitle list s = map (\ (x,y) -> x) (filter (\ (x,y) -> ((getSubj x) == s) && (y == Nothing)) list)
+
+isReferat :: (Task, Maybe Integer) -> Bool
+isReferat ((Report _ _), _ ) = True
+isReferat _ = False
+getReferats :: [(Task, Maybe Integer)]  -> [Task]
+getReferats list = map (\ (x,y) -> x) (filter isReferat list)
+
+getRest :: [(Task, Maybe Integer)] -> [Task]
+getRest list = map (\ (x,y) -> x) (filter (\ (x,y) -> (y == Nothing)) list)
+{- 
+fromJust :: Maybe a -> a
+fromJust (Just a) = a
+fromJust Nothing  = error "Не сдано" -}
+getRestForWeek :: [(Task, Maybe Integer)] -> Integer -> [Task]
+getRestForWeek list z = map (\ (x,y) -> x) (filter (\ (x,y) -> (y == Nothing) || (fromJust y > z)) list)
+
+numWeek :: [(Task, Maybe Integer)] -> Integer -> Integer
+numWeek list z = foldl (+) 0 (map (\ (x,y) -> if y == Just z then 1 else 0) list)
+uniList :: [Integer] -> [Integer]
+uniList [] = []
+uniList (x:xs) | x `elem` xs = uniList xs
+               | otherwise = x : uniList xs
+listWeek :: [(Task, Maybe Integer)] -> [Integer]
+listWeek list = uniList (map (\ (x,y) -> fromJust y) (filter (\ (x,y) -> (y /= Nothing)) list))
+getPlot :: [(Task, Maybe Integer)] -> [(Integer,Integer)]
+getPlot list = map (\ x -> (x, numWeek list x)) (listWeek list)
+
+plan = [((Lab "OSiSP" 1 ),(Just 1)),
+    ((Lab "OSiSP" 2 ),(Nothing)),
+    ((Report "OSiSP" "Threads" ),(Nothing)),
+    ((RGZ "LabView2" ),(Just 2)),
+    ((RGZ "LabView4" ),(Nothing)),
+    ((Lab "FP" 1 ),(Just 3)),
+    ((Lab "FP" 2 ),(Just 5)),
+    ((Lab "FP" 3 ),(Just 7)),
+    ((Report "OSiSP" "Linux" ),(Nothing))]
+
+main3 = do
+    print $ getByTitle plan "OSiSP"
+    print $ getReferats plan
+    print $ getRest plan
+    print $ getRestForWeek plan 3
+    print $ getPlot plan
+
+
+
+{- 
 data Task = Laba {subject :: String, labaNum :: Integer}
             |Rgz {rgzSubject :: String}
             |Referat {refSubject :: String, theme :: String} deriving(Show, Eq)
@@ -147,4 +214,7 @@ isDone (Lesson(Referat _ _)n) = n
 
 getRest :: Plan -> Plan
 getRest [] = []
-getRest (x:xs) = if(isDone x == Nothing) then x : getRest xs else getRest xs
+getRest (x:xs) = if(isDone x == Nothing) then x : getRest xs else getRest xs -}
+
+
+
