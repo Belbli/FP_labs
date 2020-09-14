@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <search-component />
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script>
+
+    Vue.component('search-component', {
+        template: 
+        `
+        <v-container>
+            <v-row
+                align="center"
+              >
+                <v-col cols="6" class="mx-auto">
+                  <v-autocomplete
+                    v-model="value"
+                    :items="cities"
+                    item-text="city"
+                    dense
+                    filled
+                    label="Choose city"
+                    return-object
+                  >
+                  </v-autocomplete>
+                </v-col>
+            </v-row>
+            <v-row v-if="value">
+                <v-card v-for="item in value.airports" :key="item"
+                    class="mx-auto"
+                    max-width="300"
+                    outlined
+                >
+                    <v-list-item three-line>
+                        <v-list-item-content>
+                            <div class="overline mb-4">{{ item.name }}</div>
+                            <v-list-item-title class="headline mb-1">{{ item.iata }}</v-list-item-title>
+                            <v-list-item-subtitle>{{ item.passengers }}</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
+
+                    <v-card-actions>
+                        <v-btn text>More</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-row>
+        </v-container>
+        `,
+        data: () => ({
+            cities: [
+                {
+                    "city": "London",
+                    "airports": [
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                    ]
+                },
+                {
+                    "city": "London",
+                    "airports": [
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                    ]
+                },
+                {
+                    "city": "Pekin",
+                    "airports": [
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                    ]
+                },
+                {
+                    "city": "New York",
+                    "airports": [
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                    ]
+                },
+                {
+                    "city": "Rome",
+                    "airports": [
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                        {
+                            "name": "London Heatrow Airport",
+                            "iata": "LHR",
+                            "passengers": 80844310
+                        },
+                    ]
+                },
+
+            ],
+            value: null,
+        }),
+    })
+
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+    })
+  </script>
+</body>
+</html>
